@@ -20,6 +20,9 @@ import {
   Receipt as ReceiptIcon,
   Assessment as AssessmentIcon,
   CompareArrows as CompareArrowsIcon,
+  AccountTree as AccountTreeIcon, // Added for Chart of Accounts
+  Book as BookIcon, // Added for Journal Entries
+  Chat as ChatIcon, // Added for AI Chat
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,6 +38,9 @@ const menuItems = [
   { text: 'Accounts Receivable', icon: <AccountBalanceIcon />, path: '/accounts-receivable' },
   { text: 'Bank Reconciliation', icon: <CompareArrowsIcon />, path: '/bank-reconciliation' },
   { text: 'Reports', icon: <AssessmentIcon />, path: '/reports' },
+ { text: 'Chart of Accounts', icon: <AccountTreeIcon />, path: '/chart-of-accounts' }, 
+ { text: 'Journal Entries', icon: <BookIcon />, path: '/journal-entries' },
+  { text: 'Chat', icon: <ChatIcon />, path: '/ai-chat' },
 ];
 
 export default function Layout({ children }: LayoutProps) {

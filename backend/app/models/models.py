@@ -16,36 +16,48 @@ class TransactionStatus(enum.Enum):
     COMPLETED = "completed"
     CANCELLED = "cancelled"
 
+class AccountType(enum.Enum):
+    ASSET = "Asset"
+    LIABILITY = "Liability"
+    EQUITY = "Equity"
+    REVENUE = "Revenue"
+    EXPENSE = "Expense"
+
+class NormalBalance(enum.Enum):
+    DEBIT = "Debit"
+    CREDIT = "Credit"
+
 class Account(Base):
-    __tablename__ = "accounts"
+    __tablename__ = "chart_of_accounts"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
-    account_type = Column(String)  # Asset, Liability, Equity, Revenue, Expense
-    balance = Column(Float, default=0.0)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    account_code = Column(String, unique=True, index=True)
+    account_name = Column(String, unique=True, index=True)
+ account_type = Column(Enum(AccountType))
+    description = Column(String, nullable=True)
+    normal_balance = Column(Enum(NormalBalance))
 
-class Transaction(Base):
-    __tablename__ = "transactions"
+class JournalEntry(Base):
+    __tablename__ = "journal_entries"
 
     id = Column(Integer, primary_key=True, index=True)
-    transaction_type = Column(Enum(TransactionType))
-    status = Column(Enum(TransactionStatus), default=TransactionStatus.PENDING)
-    amount = Column(Float)
+    entry_date = Column(DateTime, default=datetime.utcnow)
     description = Column(String)
-    reference_number = Column(String, unique=True, index=True)
-    
-    # Foreign keys
-    from_account_id = Column(Integer, ForeignKey("accounts.id"))
-    to_account_id = Column(Integer, ForeignKey("accounts.id"))
-    
-    # Relationships
-    from_account = relationship("Account", foreign_keys=[from_account_id])
-    to_account = relationship("Account", foreign_keys=[to_account_id])
-    
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationship
+    journal_items = relationship("JournalItem", back_populates="journal_entry")
+
+class JournalItem(Base):
+    __tablename__ = "journal_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    journal_entry_id = Column(Integer, ForeignKey("journal_entries.id"))
+ account_id = Column(Integer, ForeignKey("chart_of_accounts.id"))
+    debit = Column(Float, default=0.0)
+    credit = Column(Float, default=0.0)
+    journal_entry = relationship("JournalEntry", back_populates="journal_items")
 
 class Contact(Base):
     __tablename__ = "contacts"
@@ -79,9 +91,8 @@ class Invoice(Base):
 
 class BankReconciliation(Base):
     __tablename__ = "bank_reconciliations"
-
     id = Column(Integer, primary_key=True, index=True)
-    account_id = Column(Integer, ForeignKey("accounts.id"))
+ account_id = Column(Integer, ForeignKey("chart_of_accounts.id"))
     statement_date = Column(DateTime)
     statement_balance = Column(Float)
     reconciled_balance = Column(Float)

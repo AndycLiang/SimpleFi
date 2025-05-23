@@ -8,6 +8,9 @@ import AccountsPayable from './pages/AccountsPayable';
 import AccountsReceivable from './pages/AccountsReceivable';
 import BankReconciliation from './pages/BankReconciliation';
 import Reports from './pages/Reports';
+import ChartOfAccounts from './pages/ChartOfAccounts';
+import JournalEntries from 'pages/JournalEntries';
+import AIChat from 'pages/AIChat';
 
 // Create a client for React Query
 const queryClient = new QueryClient();
@@ -57,6 +60,9 @@ const App: React.FC = () => {
               <Route path="/accounts-receivable" element={<AccountsReceivable />} />
               <Route path="/bank-reconciliation" element={<BankReconciliation />} />
               <Route path="/reports" element={<Reports />} />
+              <Route path="/chart-of-accounts" element={<ChartOfAccounts />} />
+              <Route path="/journal-entries" element={<JournalEntries />} />
+              <Route path="/ai-chat" element={<AIChat />} />
             </Routes>
           </Layout>
         </Router>
