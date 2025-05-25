@@ -24,7 +24,9 @@ import {
   Book as BookIcon, // Added for Journal Entries
   Chat as ChatIcon, // Added for AI Chat
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import SimpleFiLogo from '../assets/SimpleFiLogo.png';
+import ChatBubble from './ChatBubble';
 
 const drawerWidth = 240;
 
@@ -38,8 +40,8 @@ const menuItems = [
   { text: 'Accounts Receivable', icon: <AccountBalanceIcon />, path: '/accounts-receivable' },
   { text: 'Bank Reconciliation', icon: <CompareArrowsIcon />, path: '/bank-reconciliation' },
   { text: 'Reports', icon: <AssessmentIcon />, path: '/reports' },
- { text: 'Chart of Accounts', icon: <AccountTreeIcon />, path: '/chart-of-accounts' }, 
- { text: 'Journal Entries', icon: <BookIcon />, path: '/journal-entries' },
+  { text: 'Chart of Accounts', icon: <AccountTreeIcon />, path: '/chart-of-accounts' }, 
+  { text: 'Journal Entries', icon: <BookIcon />, path: '/journal-entries' },
   { text: 'Chat', icon: <ChatIcon />, path: '/ai-chat' },
 ];
 
@@ -47,6 +49,7 @@ export default function Layout({ children }: LayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -58,12 +61,34 @@ export default function Layout({ children }: LayoutProps) {
         <Typography variant="h6" noWrap component="div">
           SimpleFi
         </Typography>
+        <Box // Wrap the img tag with Box
+          sx={{
+            position: 'absolute', 
+            top: 10, 
+            left: 10, 
+            width: 150, 
+            height: 'auto',
+            zIndex: 1, 
+          }}
+        >
+          <img
+            src={SimpleFiLogo} 
+            alt="SimpleFi Logo"
+            style={{ 
+              maxWidth: '100%',
+              height: 'auto',
+              display: 'block',
+            }}
+            className="simplefi-logo"
+          />
+        </Box>
       </Toolbar>
       <List>
         {menuItems.map((item) => (
           <ListItem
             button
             key={item.text}
+            selected={location.pathname === item.path}
             onClick={() => {
               navigate(item.path);
               setMobileOpen(false);
@@ -80,28 +105,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            AI-Powered Accounting System
-          </Typography>
-        </Toolbar>
-      </AppBar>
+
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -145,9 +149,9 @@ export default function Layout({ children }: LayoutProps) {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        <Toolbar />
         {children}
       </Box>
+      <ChatBubble />
     </Box>
   );
 } 

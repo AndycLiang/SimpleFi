@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
-from .app.routes import api
+from app.routes import api
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from typing import List
@@ -70,33 +70,33 @@ class AccountResponse(AccountBase):
         orm_mode = True
 
 class JournalItemBase(BaseModel):
- account_id: int
- debit: float = 0.0
- credit: float = 0.0
+    account_id: int
+    debit: float = 0.0
+    credit: float = 0.0
 
 class JournalItemCreate(JournalItemBase):
- pass
+    pass
 
 class JournalItemResponse(JournalItemBase):
- id: int
- journal_entry_id: int
+    id: int
+    journal_entry_id: int
 
- class Config:
- orm_mode = True
+class Config:
+    orm_mode = True
 
 class JournalEntryBase(BaseModel):
- date: date
- description: str
+    date: date
+    description: str
 
 class JournalEntryCreate(JournalEntryBase):
- items: List[JournalItemCreate]
+    items: List[JournalItemCreate]
 
 class JournalEntryResponse(JournalEntryBase):
- id: int
- items: List[JournalItemResponse] = []
+    id: int
+    items: List[JournalItemResponse] = []
 
- class Config:
- orm_mode = True
+class Config:
+    orm_mode = True
 
 # Chart of Accounts Endpoints
 @app.get("/accounts", response_model=List[AccountResponse])
@@ -155,19 +155,19 @@ async def create_journal_entry(journal_entry: JournalEntryCreate, db: Session = 
     db.refresh(db_journal_entry)
 
     for item in journal_entry.items:
- db_item = JournalItem(journal_entry_id=db_journal_entry.id, **item.dict())
- db.add(db_item)
+        db_item = JournalItem(journal_entry_id=db_journal_entry.id, **item.dict())
+        db.add(db_item)
 
     db.commit()
     db.refresh(db_journal_entry)
- return db_journal_entry
+    return db_journal_entry
 
 @app.get("/journal_entries/{journal_entry_id}", response_model=JournalEntryResponse)
 async def get_journal_entry(journal_entry_id: int, db: Session = Depends(get_db)):
     journal_entry = db.query(JournalEntry).options(joinedload(JournalEntry.items)).filter(JournalEntry.id == journal_entry_id).first()
     if journal_entry is None:
         raise HTTPException(status_code=404, detail="Journal Entry not found")
- return journal_entry
+    return journal_entry
 
 @app.put("/journal_entries/{journal_entry_id}", response_model=JournalEntryResponse)
 async def update_journal_entry(journal_entry_id: int, journal_entry: JournalEntryCreate, db: Session = Depends(get_db)):
@@ -182,12 +182,12 @@ async def update_journal_entry(journal_entry_id: int, journal_entry: JournalEntr
     # For simplicity, we'll just delete existing items and add new ones
     db.query(JournalItem).filter(JournalItem.journal_entry_id == journal_entry_id).delete()
     for item in journal_entry.items:
- db_item = JournalItem(journal_entry_id=db_journal_entry.id, **item.dict())
- db.add(db_item)
+        db_item = JournalItem(journal_entry_id=db_journal_entry.id, **item.dict())
+        db.add(db_item)
 
     db.commit()
     db.refresh(db_journal_entry)
- return db_journal_entry
+    return db_journal_entry
 
 @app.delete("/journal_entries/{journal_entry_id}")
 async def delete_journal_entry(journal_entry_id: int, db: Session = Depends(get_db)):
@@ -196,7 +196,7 @@ async def delete_journal_entry(journal_entry_id: int, db: Session = Depends(get_
         raise HTTPException(status_code=404, detail="Journal Entry not found")
     db.delete(db_journal_entry)
     db.commit()
- return {"message": "Journal Entry deleted successfully"}
+    return {"message": "Journal Entry deleted successfully"}
 
 
 if __name__ == "__main__":

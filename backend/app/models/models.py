@@ -16,12 +16,12 @@ class TransactionStatus(enum.Enum):
     COMPLETED = "completed"
     CANCELLED = "cancelled"
 
-class AccountType(enum.Enum):
-    ASSET = "Asset"
-    LIABILITY = "Liability"
-    EQUITY = "Equity"
-    REVENUE = "Revenue"
-    EXPENSE = "Expense"
+class AccountTypeEnum(enum.Enum):
+  Asset = 'Asset',
+  Liability = 'Liability',
+  Equity = 'Equity',
+  Revenue = 'Revenue',
+  Expense = 'Expense',
 
 class NormalBalance(enum.Enum):
     DEBIT = "Debit"
@@ -33,7 +33,7 @@ class Account(Base):
     id = Column(Integer, primary_key=True, index=True)
     account_code = Column(String, unique=True, index=True)
     account_name = Column(String, unique=True, index=True)
- account_type = Column(Enum(AccountType))
+    account_type = Column(Enum(AccountTypeEnum))
     description = Column(String, nullable=True)
     normal_balance = Column(Enum(NormalBalance))
 
@@ -54,7 +54,7 @@ class JournalItem(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     journal_entry_id = Column(Integer, ForeignKey("journal_entries.id"))
- account_id = Column(Integer, ForeignKey("chart_of_accounts.id"))
+    account_id = Column(Integer, ForeignKey("chart_of_accounts.id"))
     debit = Column(Float, default=0.0)
     credit = Column(Float, default=0.0)
     journal_entry = relationship("JournalEntry", back_populates="journal_items")
@@ -92,7 +92,7 @@ class Invoice(Base):
 class BankReconciliation(Base):
     __tablename__ = "bank_reconciliations"
     id = Column(Integer, primary_key=True, index=True)
- account_id = Column(Integer, ForeignKey("chart_of_accounts.id"))
+    account_id = Column(Integer, ForeignKey("chart_of_accounts.id"))
     statement_date = Column(DateTime)
     statement_balance = Column(Float)
     reconciled_balance = Column(Float)
