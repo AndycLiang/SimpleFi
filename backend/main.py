@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from app.models.models import AccountTypeEnum, Account  # Assuming AccountTypeEnum and Account models are defined in models.py
 from app.database import get_db
 from sqlalchemy.orm import Session
+from fastapi.staticfiles import StaticFiles
 
 # Load environment variables
 load_dotenv()
@@ -21,13 +22,22 @@ app = FastAPI(
 app.include_router(api.router)
 
 # Configure CORS
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["http://localhost:3000"],  # React frontend URL
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # React frontend URL
+    allow_origins=["http://localhost:3000", "https://3000-firebase-simplefi-2-1747857224566.cluster-hf4yr35cmnbd4vhbxvfvc6cp5q.cloudworkstations.dev"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/static", StaticFiles(directory="backend/public"), name="static")
 
 # Root endpoint
 @app.get("/")

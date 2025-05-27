@@ -1,5 +1,7 @@
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, status
 from typing import List, Dict, Any
+from fastapi.responses import FileResponse
+import os
 
 router = APIRouter()
 
@@ -105,4 +107,15 @@ async def suggest_categorization(transaction_data: Dict[str, Any] = Body(...)):
     suggested_category = "Utilities Expense"
     return {"category": suggested_category}
 
-# Add other AI-related endpoints here as needed
+# --- Invoice Endpoints ---
+
+@router.get("/invoices/{invoice_id}/pdf")
+async def get_invoice_pdf(invoice_id: int):
+    """
+    Stub endpoint to get an invoice PDF.
+    """
+    print("HELLO THERE!")
+    pdf_path = "backend/storage/invoices/test_invoice.pdf"  # Path to your dummy PDF
+    if not os.path.exists(pdf_path):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="PDF not found")
+    return FileResponse(pdf_path, media_type='application/pdf')
